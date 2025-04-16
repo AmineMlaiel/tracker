@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Package Tracker</title>
+    <title>Alva Tracker</title>
     <style>
         :root {
             --primary-color: #4f46e5;
@@ -50,7 +50,6 @@
             margin-bottom: 0.5rem;
             color: var(--primary-color);
             font-weight: 700;
-            letter-spacing: -0.025em;
         }
 
         header p {
@@ -212,7 +211,6 @@
             border-radius: 999px;
             font-weight: 600;
             font-size: 1rem;
-            text-transform: uppercase;
             letter-spacing: 0.05em;
         }
 
@@ -261,9 +259,7 @@
             font-size: 0.875rem;
             color: var(--light-text);
             margin-bottom: 0.5rem;
-            text-transform: uppercase;
             font-weight: 600;
-            letter-spacing: 0.05em;
         }
 
         .detail-item p {
@@ -346,7 +342,7 @@
         .timeline::before {
             content: '';
             position: absolute;
-            left: 24px;
+            right: 24px;
             top: 4rem;
             height: calc(100% - 4rem);
             width: 2px;
@@ -355,7 +351,7 @@
 
         .timeline-item {
             position: relative;
-            padding-left: 60px;
+            padding-right: 60px;
             margin-bottom: 2rem;
             padding-bottom: 1rem;
         }
@@ -367,7 +363,7 @@
 
         .timeline-dot {
             position: absolute;
-            left: 16px;
+            right: 16px;
             top: 6px;
             width: 20px;
             height: 20px;
@@ -415,7 +411,7 @@
             display: inline-block;
             width: 24px;
             height: 24px;
-            margin-right: 8px;
+            margin-left: 8px;
             vertical-align: middle;
         }
 
@@ -457,26 +453,26 @@
 <body>
     <div class="container">
         <header>
-            <h1>Package Tracker</h1>
-            <p>Track your package with any shipping carrier in real-time</p>
+            <h1>Alva Tracker</h1>
+            <p>تتبع شحنتك مع  في الوقت الحقيقي</p>
         </header>
 
         <main>
             <section class="search-container card">
                 <form id="tracking-form">
                     <div class="form-group">
-                        <label for="tracking-number">Enter Your Tracking Number</label>
+                        <label for="tracking-number">أدخل رقم التتبع</label>
                         <input 
                             type="text" 
                             id="tracking-number" 
-                            placeholder="e.g., 1Z999AA10123456789"
+                            placeholder="مثال: 12345 أو CLIENT123"
                             required
                             autocomplete="off"
                         >
                     </div>
                     <div class="button-container">
                         <button type="submit" id="track-button">
-                            <span>Track Package</span>
+                            <span>تتبع الشحنة</span>
                         </button>
                     </div>
                     <div class="error-message" id="error-message"></div>
@@ -485,12 +481,12 @@
 
             <div class="loading" id="loading">
                 <div class="spinner"></div>
-                <p>Fetching your tracking information...</p>
+                <p>لحضة برك...</p>
             </div>
 
             <section class="tracking-result card" id="tracking-result">
                 <div class="result-header">
-                    <h2>Tracking Details</h2>
+                    <h2>تفاصيل التتبع</h2>
                     <span class="tracking-number" id="result-tracking-number"></span>
                 </div>
 
@@ -500,32 +496,32 @@
 
                 <div class="details-grid">
                     <div class="detail-item">
-                        <h4>Current Location</h4>
+                        <h4>الموقع الحالي</h4>
                         <p id="location">-</p>
                     </div>
                     <div class="detail-item">
-                        <h4>Last Updated</h4>
+                        <h4>آخر تحديث</h4>
                         <p id="last-update">-</p>
                     </div>
                     <div class="detail-item">
-                        <h4>Estimated Delivery</h4>
+                        <h4>موعد التسليم المتوقع</h4>
                         <p id="delivery-date">-</p>
                     </div>
                     <div class="detail-item">
-                        <h4>Carrier</h4>
+                        <h4>شركة الشحن</h4>
                         <p id="carrier">-</p>
                     </div>
                 </div>
 
                 <div class="timeline" id="timeline">
-                    <div class="timeline-header">Tracking History</div>
-                    <!-- Timeline items will be added here dynamically -->
+                    <div class="timeline-header">سجل التتبع</div>
+                    <!-- سيتم إضافة عناصر الخط الزمني هنا ديناميكيًا -->
                 </div>
             </section>
         </main>
 
         <footer>
-            <p>&copy; 2025 Package Tracker. All rights reserved.</p>
+            <p>&ِCopyRight .Reserved alvaTracker</p>
         </footer>
     </div>
 
@@ -554,76 +550,151 @@
                 const trackingNumber = trackingNumberInput.value.trim();
                 
                 if (!trackingNumber) {
-                    showError('Please enter a valid tracking number');
+                    showError('الرجاء إدخال رقم تتبع صحيح (NID أو CID)');
                     trackingNumberInput.focus();
                     return;
                 }
 
-                // Clear previous results
                 clearResults();
-                
-                // Show loading spinner
                 loading.classList.add('show');
                 trackButton.disabled = true;
                 errorMessage.classList.remove('show');
                 
                 try {
-                    // Call the tracking API (in this case our serverless function)
-                    const response = await fetch(`/api/track?trackingNumber=${encodeURIComponent(trackingNumber)}`);
+                    // First fetch basic parcel info
+                    const parcelData = await fetchParcelInfo(trackingNumber);
                     
-                    if (!response.ok) {
-                        throw new Error(`Error: ${response.status}`);
-                    }
+                    // Then fetch parcel history
+                    const historyData = await fetchParcelHistory(parcelData.nid);
                     
-                    const data = await response.json();
+                    // Combine and transform the data for display
+                    const transformedData = transformIntigoData(parcelData, historyData);
                     
-                    // Display the tracking results
-                    displayTrackingResults(trackingNumber, data);
+                    displayTrackingResults(trackingNumber, transformedData);
                     
-                    // Smooth scroll to results
                     setTimeout(() => {
                         trackingResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }, 100);
                     
                 } catch (error) {
-                    showError('Unable to retrieve tracking information. Please check the tracking number and try again.');
-                    console.error('Error fetching tracking data:', error);
+                    showError(error.message || 'تعذر جلب معلومات التتبع. الرجاء التحقق من رقم التتبع والمحاولة مرة أخرى.');
+                    console.error('Error:', error);
                     trackingNumberInput.focus();
                 } finally {
-                    // Hide loading spinner
                     loading.classList.remove('show');
                     trackButton.disabled = false;
                 }
             });
 
-            function displayTrackingResults(trackingNumber, data) {
-                // Show results container
-                trackingResult.classList.add('show');
+            // New API fetch functions for Intigo
+            async function fetchParcelInfo(code) {
+                const isNid = code.length <= 9; // Assuming NIDs are shorter (5-9 chars per docs)
+                const endpoint = isNid ? `nid=${code}` : `cid=${code}`;
+                const url = `https://external-api.intigo.tn/secure-api/parcels/parcel?${endpoint}`;
                 
-                // Set tracking number
+                const response = await fetch(url, {
+                    headers: { 
+                        'Authorization': `{ apiKey: ${process.env.SHIPPING_API_KEY} }`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'فشل في جلب معلومات الشحنة');
+                }
+                
+                return response.json();
+            }
+
+            async function fetchParcelHistory(nid) {
+                const url = `https://external-api.intigo.tn/secure-api/parcels/${nid}/history`;
+                
+                const response = await fetch(url, {
+                    headers: { 
+                        'Authorization': `{ apiKey: ${process.env.SHIPPING_API_KEY} }`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'فشل في جلب سجل الشحنة');
+                }
+                
+                return response.json();
+            }
+
+            // Transform Intigo data to match our frontend format
+            function transformIntigoData(parcelData, historyData) {
+                // Map Intigo status codes to Arabic messages
+                const statusMap = {
+                    2: 'تم تعيينه لموظف التوصيل',
+                    6: 'تم التسليم',
+                    8: 'تم الإلغاء من قبل الإدارة',
+                    10: 'في طريق التوصيل',
+                    15: 'تم إرجاعه مؤقتًا',
+                    16: 'تم إرجاعه نهائيًا',
+                    17: 'تم إرجاعه إلى البائع',
+                    20: 'تم نقله إلى المركز الرئيسي',
+                    21: 'مفقود',
+                    25: 'تم استلامه في المركز الرئيسي',
+                    27: 'في الطريق',
+                    28: 'يتطلب التحقق',
+                    29: 'سيتم إعادة الإطلاق'
+                };
+                
+                // Get current status message
+                const status = statusMap[parcelData.status] || 'حالة غير معروفة';
+                
+                // Transform history events
+                const events = Array.isArray(historyData) ? historyData.map(event => ({
+                    status: statusMap[event.status] || `الحالة: ${event.status}`,
+                    location: event.centrale || 'موقع غير معروف',
+                    timestamp: event.date
+                })) : [];
+                
+                // Sort events by date (newest first)
+                events.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                
+                // Find current location from most recent event
+                const currentLocation = events[0]?.location || 'غير معروف';
+                
+                return {
+                    status,
+                    currentLocation,
+                    lastUpdate: events[0]?.timestamp || new Date().toISOString(),
+                    estimatedDelivery: null, // Intigo API doesn't provide this
+                    carrier: 'Intigo',
+                    events
+                };
+            }
+
+            function displayTrackingResults(trackingNumber, data) {
+                trackingResult.classList.add('show');
                 resultTrackingNumber.textContent = trackingNumber;
                 
                 // Set status with appropriate class
                 statusElement.textContent = data.status;
                 statusElement.className = 'status';
                 
-                // Add appropriate status class
+                // Add status-specific class
                 const statusLower = data.status.toLowerCase();
-                if (statusLower.includes('delivered')) {
+                if (statusLower.includes('تم التسليم')) {
                     statusElement.classList.add('delivered');
-                } else if (statusLower.includes('transit')) {
-                    statusElement.classList.add('in-transit');
-                } else if (statusLower.includes('out for delivery')) {
+                } else if (statusLower.includes('في طريق التوصيل')) {
                     statusElement.classList.add('out-for-delivery');
+                } else if (statusLower.includes('في الطريق') || statusLower.includes('تم نقله')) {
+                    statusElement.classList.add('in-transit');
                 } else {
                     statusElement.classList.add('pending');
                 }
                 
-                // Set other tracking details
-                locationElement.textContent = data.currentLocation || 'Not available';
+                // Set other details
+                locationElement.textContent = data.currentLocation;
                 lastUpdateElement.textContent = formatDate(data.lastUpdate);
-                deliveryDateElement.textContent = data.estimatedDelivery ? formatDate(data.estimatedDelivery) : 'Not available';
-                carrierElement.textContent = data.carrier || 'Unknown';
+                deliveryDateElement.textContent = data.estimatedDelivery ? formatDate(data.estimatedDelivery) : 'غير متوفر';
+                carrierElement.textContent = data.carrier;
                 
                 // Generate timeline
                 generateTimeline(data.events);
@@ -638,7 +709,7 @@
                 // If no events, show message
                 if (!events || events.length === 0) {
                     const noEvents = document.createElement('p');
-                    noEvents.textContent = 'No tracking events available.';
+                    noEvents.textContent = 'لا توجد أحداث تتبع متاحة.';
                     noEvents.style.padding = '1rem 0';
                     noEvents.style.color = 'var(--light-text)';
                     timelineElement.appendChild(noEvents);
@@ -669,16 +740,16 @@
             }
 
             function formatDate(dateString) {
-                if (!dateString) return 'Not available';
+                if (!dateString) return 'غير متوفر';
                 
                 const date = new Date(dateString);
                 
                 // Check if date is valid
                 if (isNaN(date.getTime())) {
-                    return dateString; // Return original string if not a valid date
+                    return dateString;
                 }
                 
-                return new Intl.DateTimeFormat('en-US', {
+                return new Intl.DateTimeFormat('ar-TN', {
                     weekday: 'short',
                     month: 'short',
                     day: 'numeric',
@@ -705,16 +776,6 @@
                     timelineElement.appendChild(timelineHeader);
                 }
             }
-            
-            // Example tracking numbers for testing
-            const exampleTrackingNumbers = [
-                '1Z999AA10123456789',
-                '9400111202555842642437',
-                'FD884697896546'
-            ];
-            
-            // Set a placeholder example tracking number
-            trackingNumberInput.placeholder = `e.g., ${exampleTrackingNumbers[Math.floor(Math.random() * exampleTrackingNumbers.length)]}`;
         });
     </script>
 </body>

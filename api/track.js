@@ -1,138 +1,92 @@
 // /api/track.js
 export default async function handler(req, res) {
-    // Get the tracking number from the query parameters
-    const { trackingNumber } = req.query;
-    
-    if (!trackingNumber) {
-      return res.status(400).json({ error: 'Tracking number is required' });
-    }
+  // Get the tracking number from the query parameters
+  const { trackingNumber } = req.query;
   
-    try {
-      // In a real implementation, you would call the actual shipping carrier API here
-      // For demonstration purposes, we're generating mock data
-      
-      // Simulate API latency
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Generate mock tracking data based on the tracking number
-      const mockData = generateMockTrackingData(trackingNumber);
-      
-      // Return the tracking data
-      return res.status(200).json(mockData);
-    } catch (error) {
-      console.error('Error tracking package:', error);
-      return res.status(500).json({ error: 'Failed to retrieve tracking information' });
-    }
+  if (!trackingNumber) {
+    return res.status(400).json({ error: 'رقم التتبع مطلوب' });
   }
+
+  // Your API key from environment variable
+  const API_KEY = process.env.SHIPPING_API_KEY;
   
-  // Function to generate realistic mock tracking data
-  function generateMockTrackingData(trackingNumber) {
-    // Use the last characters of the tracking number to deterministically generate the status
-    const statusSeed = trackingNumber.slice(-1).charCodeAt(0) % 4;
+  try {
+    // Determine if it's NID or CID
+    const isNid = trackingNumber.length <= 9;
+    const endpoint = isNid ? `nid=${trackingNumber}` : `cid=${trackingNumber}`;
     
-    // Use the first part of the tracking number to identify the carrier
-    const carrierSeed = trackingNumber.slice(0, 2).toLowerCase();
-    
-    // Determine carrier
-    let carrier;
-    if (carrierSeed === '1z') {
-      carrier = 'UPS';
-    } else if (carrierSeed.startsWith('9')) {
-      carrier = 'USPS';
-    } else if (carrierSeed === 'fd') {
-      carrier = 'FedEx';
-    } else {
-      carrier = 'Global Shipping Partners';
-    }
-    
-    // Generate a current date
-    const now = new Date();
-    
-    // Generate delivery date (1-5 days from now)
-    const deliveryDays = (trackingNumber.charCodeAt(0) % 5) + 1;
-    const estimatedDelivery = new Date(now);
-    estimatedDelivery.setDate(estimatedDelivery.getDate() + deliveryDays);
-    
-    // Create events array with the most recent first
-    const events = [];
-    
-    // Status types based on the seed
-    const statuses = [
-      'Delivered', 
-      'Out for Delivery',
-      'In Transit',
-      'Package Processed'
-    ];
-    
-    const status = statuses[statusSeed];
-    
-    // Generate location based on tracking number
-    const cities = [
-      'New York, NY',
-      'Los Angeles, CA',
-      'Chicago, IL',
-      'Houston, TX',
-      'Phoenix, AZ',
-      'Philadelphia, PA',
-      'San Antonio, TX',
-      'San Diego, CA'
-    ];
-    
-    const currentLocationIndex = Math.abs(trackingNumber.charCodeAt(3) % cities.length);
-    const currentLocation = cities[currentLocationIndex];
-    
-    // Initial package acceptance
-    const startDate = new Date(now);
-    startDate.setDate(startDate.getDate() - 3);
-    
-    events.push({
-      status: 'Package Processed',
-      timestamp: startDate.toISOString(),
-      location: 'Shipping Facility'
+    // First fetch basic parcel info
+    const parcelUrl = `https://external-api.intigo.tn/secure-api/parcels/parcel?${endpoint}`;
+    const parcelResponse = await fetch(parcelUrl, {
+      headers: { 
+        'Authorization': `{ apiKey: ${API_KEY} }`,
+        'Content-Type': 'application/json'
+      }
     });
     
-    // Transit event
-    if (statusSeed >= 2) {
-      const transitDate = new Date(startDate);
-      transitDate.setDate(transitDate.getDate() + 1);
-      events.push({
-        status: 'In Transit',
-        timestamp: transitDate.toISOString(),
-        location: 'Distribution Center'
-      });
+    if (!parcelResponse.ok) {
+      const errorData = await parcelResponse.json();
+      console.error('API error:', errorData);
+      throw new Error(`خطأ في API: ${parcelResponse.status}`);
     }
     
-    // Out for delivery
-    if (statusSeed >= 1) {
-      const outForDeliveryDate = new Date(now);
-      outForDeliveryDate.setHours(outForDeliveryDate.getHours() - 4);
-      events.push({
-        status: 'Out for Delivery',
-        timestamp: outForDeliveryDate.toISOString(),
-        location: currentLocation
-      });
+    const parcelData = await parcelResponse.json();
+    
+    // Then fetch parcel history
+    const historyUrl = `https://external-api.intigo.tn/secure-api/parcels/${parcelData.nid}/history`;
+    const historyResponse = await fetch(historyUrl, {
+      headers: { 
+        'Authorization': `{ apiKey: ${API_KEY} }`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!historyResponse.ok) {
+      const errorData = await historyResponse.json();
+      console.error('API error:', errorData);
+      throw new Error(`خطأ في API: ${historyResponse.status}`);
     }
     
-    // Delivered
-    if (statusSeed === 0) {
-      events.push({
-        status: 'Delivered',
-        timestamp: now.toISOString(),
-        location: currentLocation
-      });
-    }
+    const historyData = await historyResponse.json();
     
-    // Reverse events so most recent is first
-    events.reverse();
-    
-    // Return the mock tracking data
-    return {
-      trackingNumber,
-      carrier,
-      status,
-      currentLocation,
-      lastUpdate: events[0].timestamp,
-      estimatedDelivery: statusSeed === 0 ? null : estimatedDelivery.toISOString(),
-      events
+    // Map Intigo status codes to Arabic messages
+    const statusMap = {
+      2: 'تم تعيينه لموظف التوصيل',
+      6: 'تم التسليم',
+      8: 'تم الإلغاء من قبل الإدارة',
+      10: 'في طريق التوصيل',
+      15: 'تم إرجاعه مؤقتًا',
+      16: 'تم إرجاعه نهائيًا',
+      17: 'تم إرجاعه إلى البائع',
+      20: 'تم نقله إلى المركز الرئيسي',
+      21: 'مفقود',
+      25: 'تم استلامه في المركز الرئيسي',
+      27: 'في الطريق',
+      28: 'يتطلب التحقق',
+      29: 'سيتم إعادة الإطلاق'
     };
+    
+    // Transform the data for frontend
+    const transformedData = {
+      trackingNumber: isNid ? parcelData.nid : parcelData.cid,
+      carrier: 'Intigo',
+      status: statusMap[parcelData.status] || 'حالة غير معروفة',
+      currentLocation: historyData[0]?.centrale || 'غير معروف',
+      lastUpdate: historyData[0]?.date || new Date().toISOString(),
+      estimatedDelivery: null, // Intigo doesn't provide this
+      events: Array.isArray(historyData) ? historyData.map(event => ({
+        status: statusMap[event.status] || `الحالة: ${event.status}`,
+        location: event.centrale || 'موقع غير معروف',
+        timestamp: event.date
+      })) : []
+    };
+    
+    // Sort events by date (newest first)
+    transformedData.events.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    
+    return res.status(200).json(transformedData);
+  } catch (error) {
+    console.error('خطأ في تتبع الشحنة:', error);
+    return res.status(500).json({ error: 'فشل في جلب معلومات التتبع' });
   }
+}
