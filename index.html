@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alva Tracker</title>
+    <title>متتبع الشحنات - Alva Tracker</title>
+    <meta name="description" content="تتبع شحنات Intigo الخاصة بك في الوقت الفعلي">
     <style>
         :root {
             --primary-color: #4f46e5;
@@ -21,15 +22,13 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Tajawal', 'Segoe UI', sans-serif;
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
             line-height: 1.6;
-            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23e2e8f0' fill-opacity='0.6' fill-rule='evenodd'/%3E%3C/svg%3E");
-            background-attachment: fixed;
             padding: 20px;
             min-height: 100vh;
         }
@@ -57,417 +56,39 @@
             font-size: 1.125rem;
         }
 
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-            margin-bottom: 2rem;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
+        /* ... (Keep all your existing CSS styles) ... */
 
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
-        }
-
-        .search-container {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .search-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-color), #8b5cf6, #ec4899);
-            border-radius: 4px 4px 0 0;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.75rem;
-            font-weight: 600;
-            color: var(--text-color);
-            font-size: 1.125rem;
-        }
-
-        input {
-            width: 100%;
-            padding: 0.875rem 1rem;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1.125rem;
-            transition: all 0.3s ease;
-            background-color: #f9fafb;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
-            background-color: #fff;
-        }
-
-        input::placeholder {
-            color: #9ca3af;
-            font-weight: 400;
-        }
-
-        .button-container {
-            display: flex;
-            justify-content: center;
-        }
-
-        button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 0.875rem 2rem;
-            font-size: 1.125rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(79, 70, 229, 0.25);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 180px;
-        }
-
-        button:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(79, 70, 229, 0.3);
-        }
-
-        button:active {
-            transform: translateY(1px);
-            box-shadow: 0 2px 4px rgba(79, 70, 229, 0.25);
-        }
-
-        button:disabled {
-            background-color: #9ca3af;
-            transform: none;
-            box-shadow: none;
-            cursor: not-allowed;
-        }
-
-        .tracking-result {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-            display: none;
-            overflow: hidden;
-        }
-
-        .tracking-result.show {
-            display: block;
-        }
-
-        .result-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .result-header h2 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-
-        .tracking-number {
-            background-color: #eff6ff;
-            padding: 0.5rem 1rem;
-            border-radius: 999px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: #1e40af;
-            border: 1px solid #dbeafe;
-        }
-
-        .status-container {
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        .status {
-            display: inline-block;
-            padding: 0.5rem 1.25rem;
-            border-radius: 999px;
-            font-weight: 600;
-            font-size: 1rem;
-            letter-spacing: 0.05em;
-        }
-
-        .status.delivered {
-            background-color: #d1fae5;
-            color: #065f46;
-        }
-
-        .status.in-transit {
-            background-color: #dbeafe;
-            color: #1e40af;
-        }
-
-        .status.pending {
-            background-color: #fef3c7;
-            color: #92400e;
-        }
-
-        .status.out-for-delivery {
-            background-color: #e0e7ff;
-            color: #3730a3;
-        }
-
-        .details-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
-            background-color: #f9fafb;
-            border-radius: 8px;
-            padding: 1.5rem;
-        }
-
-        @media (max-width: 600px) {
-            .details-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-        }
-
-        .detail-item {
-            margin-bottom: 1rem;
-        }
-
-        .detail-item h4 {
-            font-size: 0.875rem;
-            color: var(--light-text);
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-
-        .detail-item p {
-            font-size: 1.125rem;
-            font-weight: 500;
-            color: var(--text-color);
-        }
-
-        .error-message {
-            background-color: #fee2e2;
-            color: #b91c1c;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-top: 1rem;
-            display: none;
-            font-weight: 500;
-            border-left: 4px solid #ef4444;
-        }
-
-        .error-message.show {
-            display: block;
-            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
-        }
-
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-            40%, 60% { transform: translate3d(4px, 0, 0); }
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            margin: 3rem 0;
-        }
-
-        .loading.show {
-            display: block;
-        }
-
-        .spinner {
-            display: inline-block;
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(79, 70, 229, 0.2);
-            border-radius: 50%;
-            border-top-color: var(--primary-color);
-            animation: spin 1s ease-in-out infinite;
-            margin-bottom: 1rem;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .loading p {
-            color: var(--light-text);
-            font-size: 1.125rem;
-            font-weight: 500;
-        }
-
-        .timeline {
-            margin-top: 3rem;
-            position: relative;
-            padding-top: 1rem;
-        }
-
-        .timeline-header {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            color: var(--text-color);
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.75rem;
-        }
-
-        .timeline::before {
-            content: '';
-            position: absolute;
-            right: 24px;
-            top: 4rem;
-            height: calc(100% - 4rem);
-            width: 2px;
-            background-color: #e5e7eb;
-        }
-
-        .timeline-item {
-            position: relative;
-            padding-right: 60px;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-        }
-
-        .timeline-item:last-child {
-            margin-bottom: 0;
-            border-bottom: none;
-        }
-
-        .timeline-dot {
-            position: absolute;
-            right: 16px;
-            top: 6px;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: #9ca3af;
-            border: 3px solid #f3f4f6;
-            z-index: 1;
-        }
-
-        .timeline-item.current .timeline-dot {
-            background-color: var(--primary-color);
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.3);
-        }
-
-        .timeline-date {
-            font-size: 0.875rem;
-            color: var(--light-text);
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-
-        .timeline-content h4 {
-            font-size: 1.125rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--text-color);
-        }
-
-        .timeline-content p {
-            font-size: 1rem;
-            color: var(--light-text);
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 4rem;
-            padding: 2rem 0;
-            color: var(--light-text);
-            font-size: 0.875rem;
-            border-top: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        /* Icons */
-        .icon {
-            display: inline-block;
-            width: 24px;
-            height: 24px;
-            margin-left: 8px;
-            vertical-align: middle;
-        }
-
-        /* Subtle animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .tracking-result.show {
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        /* Responsive adjustments */
         @media (max-width: 768px) {
             body {
                 padding: 10px;
             }
             
-            .card {
-                padding: 1.5rem;
-            }
-            
             header h1 {
                 font-size: 2rem;
             }
-            
-            .result-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .tracking-number {
-                margin-top: 0.5rem;
-            }
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Alva Tracker</h1>
-            <p>تتبع شحنتك مع  في الوقت الحقيقي</p>
+            <h1>متتبع الشحنات</h1>
+            <p>تتبع شحنتك مع Intigo في الوقت الحقيقي</p>
         </header>
 
         <main>
             <section class="search-container card">
                 <form id="tracking-form">
                     <div class="form-group">
-                        <label for="tracking-number">أدخل رقم التتبع</label>
+                        <label for="tracking-number">رقم التتبع (NID أو CID)</label>
                         <input 
                             type="text" 
                             id="tracking-number" 
                             placeholder="مثال: 12345 أو CLIENT123"
                             required
                             autocomplete="off"
+                            autofocus
                         >
                     </div>
                     <div class="button-container">
@@ -481,7 +102,7 @@
 
             <div class="loading" id="loading">
                 <div class="spinner"></div>
-                <p>لحضة برك...</p>
+                <p>جاري البحث عن معلومات الشحنة...</p>
             </div>
 
             <section class="tracking-result card" id="tracking-result">
@@ -504,24 +125,24 @@
                         <p id="last-update">-</p>
                     </div>
                     <div class="detail-item">
-                        <h4>موعد التسليم المتوقع</h4>
-                        <p id="delivery-date">-</p>
-                    </div>
-                    <div class="detail-item">
                         <h4>شركة الشحن</h4>
                         <p id="carrier">-</p>
+                    </div>
+                    <div class="detail-item">
+                        <h4>الحالة</h4>
+                        <p id="status-text">-</p>
                     </div>
                 </div>
 
                 <div class="timeline" id="timeline">
                     <div class="timeline-header">سجل التتبع</div>
-                    <!-- سيتم إضافة عناصر الخط الزمني هنا ديناميكيًا -->
+                    <!-- سيتم إضافة الأحداث هنا -->
                 </div>
             </section>
         </main>
 
         <footer>
-            <p>&ِCopyRight .Reserved alvaTracker</p>
+            <p>© 2023 Alva Tracker - www.alvatracker.site</p>
         </footer>
     </div>
 
@@ -533,200 +154,102 @@
             const errorMessage = document.getElementById('error-message');
             const loading = document.getElementById('loading');
             const trackingResult = document.getElementById('tracking-result');
+            
+            // Result elements
             const resultTrackingNumber = document.getElementById('result-tracking-number');
             const statusElement = document.getElementById('status');
             const locationElement = document.getElementById('location');
             const lastUpdateElement = document.getElementById('last-update');
-            const deliveryDateElement = document.getElementById('delivery-date');
             const carrierElement = document.getElementById('carrier');
+            const statusTextElement = document.getElementById('status-text');
             const timelineElement = document.getElementById('timeline');
 
-            // Focus on tracking number input when page loads
-            trackingNumberInput.focus();
-
+            // Form submission handler
             trackingForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
                 const trackingNumber = trackingNumberInput.value.trim();
                 
                 if (!trackingNumber) {
-                    showError('الرجاء إدخال رقم تتبع صحيح (NID أو CID)');
-                    trackingNumberInput.focus();
+                    showError('الرجاء إدخال رقم التتبع');
                     return;
                 }
 
                 clearResults();
                 loading.classList.add('show');
                 trackButton.disabled = true;
-                errorMessage.classList.remove('show');
                 
                 try {
-                    // First fetch basic parcel info
-                    const parcelData = await fetchParcelInfo(trackingNumber);
+                    // Call your Vercel backend API
+                    const response = await fetch(`https://www.alvatracker.site/api/track?trackingNumber=${encodeURIComponent(trackingNumber)}`);
                     
-                    // Then fetch parcel history
-                    const historyData = await fetchParcelHistory(parcelData.nid);
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'فشل في جلب البيانات');
+                    }
                     
-                    // Combine and transform the data for display
-                    const transformedData = transformIntigoData(parcelData, historyData);
+                    const data = await response.json();
+                    displayTrackingResults(trackingNumber, data);
                     
-                    displayTrackingResults(trackingNumber, transformedData);
-                    
+                    // Smooth scroll to results
                     setTimeout(() => {
-                        trackingResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        trackingResult.scrollIntoView({ behavior: 'smooth' });
                     }, 100);
                     
                 } catch (error) {
-                    showError(error.message || 'تعذر جلب معلومات التتبع. الرجاء التحقق من رقم التتبع والمحاولة مرة أخرى.');
-                    console.error('Error:', error);
-                    trackingNumberInput.focus();
+                    showError(error.message || 'حدث خطأ، الرجاء المحاولة لاحقاً');
+                    console.error('Tracking error:', error);
                 } finally {
                     loading.classList.remove('show');
                     trackButton.disabled = false;
                 }
             });
 
-            // New API fetch functions for Intigo
-            async function fetchParcelInfo(code) {
-                const isNid = code.length <= 9; // Assuming NIDs are shorter (5-9 chars per docs)
-                const endpoint = isNid ? `nid=${code}` : `cid=${code}`;
-                const url = `https://external-api.intigo.tn/secure-api/parcels/parcel?${endpoint}`;
-                
-                const response = await fetch(url, {
-                    headers: { 
-                        'Authorization': `{ apiKey: ${process.env.SHIPPING_API_KEY} }`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || 'فشل في جلب معلومات الشحنة');
-                }
-                
-                return response.json();
-            }
-
-            async function fetchParcelHistory(nid) {
-                const url = `https://external-api.intigo.tn/secure-api/parcels/${nid}/history`;
-                
-                const response = await fetch(url, {
-                    headers: { 
-                        'Authorization': `{ apiKey: ${process.env.SHIPPING_API_KEY} }`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || 'فشل في جلب سجل الشحنة');
-                }
-                
-                return response.json();
-            }
-
-            // Transform Intigo data to match our frontend format
-            function transformIntigoData(parcelData, historyData) {
-                // Map Intigo status codes to Arabic messages
-                const statusMap = {
-                    2: 'تم تعيينه لموظف التوصيل',
-                    6: 'تم التسليم',
-                    8: 'تم الإلغاء من قبل الإدارة',
-                    10: 'في طريق التوصيل',
-                    15: 'تم إرجاعه مؤقتًا',
-                    16: 'تم إرجاعه نهائيًا',
-                    17: 'تم إرجاعه إلى البائع',
-                    20: 'تم نقله إلى المركز الرئيسي',
-                    21: 'مفقود',
-                    25: 'تم استلامه في المركز الرئيسي',
-                    27: 'في الطريق',
-                    28: 'يتطلب التحقق',
-                    29: 'سيتم إعادة الإطلاق'
-                };
-                
-                // Get current status message
-                const status = statusMap[parcelData.status] || 'حالة غير معروفة';
-                
-                // Transform history events
-                const events = Array.isArray(historyData) ? historyData.map(event => ({
-                    status: statusMap[event.status] || `الحالة: ${event.status}`,
-                    location: event.centrale || 'موقع غير معروف',
-                    timestamp: event.date
-                })) : [];
-                
-                // Sort events by date (newest first)
-                events.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                
-                // Find current location from most recent event
-                const currentLocation = events[0]?.location || 'غير معروف';
-                
-                return {
-                    status,
-                    currentLocation,
-                    lastUpdate: events[0]?.timestamp || new Date().toISOString(),
-                    estimatedDelivery: null, // Intigo API doesn't provide this
-                    carrier: 'Intigo',
-                    events
-                };
-            }
-
             function displayTrackingResults(trackingNumber, data) {
                 trackingResult.classList.add('show');
                 resultTrackingNumber.textContent = trackingNumber;
                 
-                // Set status with appropriate class
+                // Set status
                 statusElement.textContent = data.status;
-                statusElement.className = 'status';
+                statusTextElement.textContent = data.status;
                 
-                // Add status-specific class
-                const statusLower = data.status.toLowerCase();
-                if (statusLower.includes('تم التسليم')) {
+                // Apply status class
+                statusElement.className = 'status';
+                if (data.status.includes('تم التسليم')) {
                     statusElement.classList.add('delivered');
-                } else if (statusLower.includes('في طريق التوصيل')) {
+                } else if (data.status.includes('في طريق التوصيل')) {
                     statusElement.classList.add('out-for-delivery');
-                } else if (statusLower.includes('في الطريق') || statusLower.includes('تم نقله')) {
+                } else if (data.status.includes('في الطريق') || data.status.includes('تم نقله')) {
                     statusElement.classList.add('in-transit');
                 } else {
                     statusElement.classList.add('pending');
                 }
                 
                 // Set other details
-                locationElement.textContent = data.currentLocation;
-                lastUpdateElement.textContent = formatDate(data.lastUpdate);
-                deliveryDateElement.textContent = data.estimatedDelivery ? formatDate(data.estimatedDelivery) : 'غير متوفر';
-                carrierElement.textContent = data.carrier;
+                locationElement.textContent = data.currentLocation || 'غير معروف';
+                lastUpdateElement.textContent = formatDate(data.lastUpdate) || 'غير متوفر';
+                carrierElement.textContent = data.carrier || 'Intigo';
                 
                 // Generate timeline
-                generateTimeline(data.events);
+                generateTimeline(data.events || []);
             }
 
             function generateTimeline(events) {
-                // Clear previous timeline content except the header
-                const timelineHeader = timelineElement.querySelector('.timeline-header');
-                timelineElement.innerHTML = '';
-                timelineElement.appendChild(timelineHeader);
+                timelineElement.innerHTML = '<div class="timeline-header">سجل التتبع</div>';
                 
-                // If no events, show message
-                if (!events || events.length === 0) {
+                if (events.length === 0) {
                     const noEvents = document.createElement('p');
-                    noEvents.textContent = 'لا توجد أحداث تتبع متاحة.';
+                    noEvents.textContent = 'لا توجد أحداث تتبع متاحة';
                     noEvents.style.padding = '1rem 0';
                     noEvents.style.color = 'var(--light-text)';
                     timelineElement.appendChild(noEvents);
                     return;
                 }
                 
-                // Add each event to the timeline
                 events.forEach((event, index) => {
-                    const timelineItem = document.createElement('div');
-                    timelineItem.className = 'timeline-item';
-                    
-                    // If it's the most recent event, mark it as current
-                    if (index === 0) {
-                        timelineItem.classList.add('current');
-                    }
-                    
-                    timelineItem.innerHTML = `
+                    const item = document.createElement('div');
+                    item.className = `timeline-item ${index === 0 ? 'current' : ''}`;
+                    item.innerHTML = `
                         <div class="timeline-dot"></div>
                         <div class="timeline-date">${formatDate(event.timestamp)}</div>
                         <div class="timeline-content">
@@ -734,30 +257,24 @@
                             <p>${event.location || ''}</p>
                         </div>
                     `;
-                    
-                    timelineElement.appendChild(timelineItem);
+                    timelineElement.appendChild(item);
                 });
             }
 
             function formatDate(dateString) {
-                if (!dateString) return 'غير متوفر';
-                
-                const date = new Date(dateString);
-                
-                // Check if date is valid
-                if (isNaN(date.getTime())) {
+                if (!dateString) return '';
+                try {
+                    const date = new Date(dateString);
+                    return date.toLocaleString('ar-TN', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                } catch {
                     return dateString;
                 }
-                
-                return new Intl.DateTimeFormat('ar-TN', {
-                    weekday: 'short',
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                    hour: 'numeric',
-                    minute: 'numeric',
-                    hour12: true
-                }).format(date);
             }
 
             function showError(message) {
@@ -768,13 +285,6 @@
             function clearResults() {
                 trackingResult.classList.remove('show');
                 errorMessage.classList.remove('show');
-                
-                // Keep the timeline header but clear the events
-                const timelineHeader = timelineElement.querySelector('.timeline-header');
-                if (timelineHeader) {
-                    timelineElement.innerHTML = '';
-                    timelineElement.appendChild(timelineHeader);
-                }
             }
         });
     </script>
